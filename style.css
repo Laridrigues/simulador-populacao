@@ -1,9 +1,11 @@
+/* RESET */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* BODY */
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 50%, #f3e8ff 100%);
@@ -17,7 +19,7 @@ body {
     margin: 0 auto;
 }
 
-/* Header */
+/* HEADER */
 header {
     text-align: center;
     margin-bottom: 3.5rem;
@@ -37,7 +39,7 @@ header h1 {
     font-weight: 500;
 }
 
-/* Main Grid */
+/* GRID */
 .main-grid {
     display: grid;
     grid-template-columns: 380px 1fr;
@@ -51,7 +53,7 @@ header h1 {
     }
 }
 
-/* Controls Panel */
+/* CONTROLS */
 .controls-panel {
     background: white;
     border-radius: 1.75rem;
@@ -68,6 +70,7 @@ header h1 {
     font-weight: 700;
 }
 
+/* COUNTRY SECTIONS */
 .country-section {
     padding: 1.5rem;
     border-radius: 1.25rem;
@@ -100,6 +103,7 @@ header h1 {
     color: #6b21a8;
 }
 
+/* FORM */
 .form-group {
     margin-bottom: 1.25rem;
 }
@@ -111,7 +115,8 @@ header h1 {
     margin-bottom: 0.4rem;
 }
 
-.form-group input {
+.form-group input,
+.form-group select {
     width: 100%;
     padding: 0.85rem 1rem;
     border-radius: 0.75rem;
@@ -119,7 +124,23 @@ header h1 {
     font-size: 1rem;
 }
 
-/* Buttons */
+/* BANDEIRAS */
+.flag {
+    width: 26px;              /* TAMANHO AJUSTADO */
+    height: auto;
+    border-radius: 3px;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+}
+
+/* SELECT + FLAG */
+.select-flag {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* BUTTONS */
 .button-group {
     display: flex;
     gap: 0.75rem;
@@ -141,6 +162,7 @@ button {
     flex: 1;
     background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
     color: white;
+    border: none;
 }
 
 .btn-secondary {
@@ -149,14 +171,13 @@ button {
     color: #4f46e5;
 }
 
-/* Results Area */
+/* RESULTS */
 .results-area {
     display: flex;
     flex-direction: column;
     gap: 3.5rem;
 }
 
-/* Result Panel */
 .results-panel {
     background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
     color: white;
@@ -177,7 +198,6 @@ button {
     font-weight: 800;
 }
 
-/* Highlight */
 .results-highlight {
     background: rgba(255, 255, 255, 0.15);
     border-radius: 1.5rem;
@@ -197,7 +217,7 @@ button {
     opacity: 0.95;
 }
 
-/* Cards */
+/* CARDS */
 .population-grid {
     display: grid;
     grid-template-columns: 1.1fr 1fr;
@@ -232,7 +252,7 @@ button {
     font-size: 0.9rem;
 }
 
-/* Chart */
+/* CHART */
 .chart-panel {
     background: white;
     border-radius: 1.75rem;
@@ -250,7 +270,7 @@ button {
     max-height: 340px;
 }
 
-/* Responsive */
+/* MOBILE */
 @media (max-width: 768px) {
     body {
         padding: 1rem;
@@ -262,5 +282,9 @@ button {
 
     .big-number {
         font-size: 2.6rem;
+    }
+
+    .flag {
+        width: 22px;
     }
 }
