@@ -1,0 +1,266 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 50%, #f3e8ff 100%);
+    min-height: 100vh;
+    padding: 2rem;
+    color: #1e293b;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Header */
+header {
+    text-align: center;
+    margin-bottom: 3.5rem;
+}
+
+header h1 {
+    font-size: 2.75rem;
+    color: #312e81;
+    margin-bottom: 0.75rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+}
+
+.subtitle {
+    font-size: 1.125rem;
+    color: #6366f1;
+    font-weight: 500;
+}
+
+/* Main Grid */
+.main-grid {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 2.5rem;
+    align-items: start;
+}
+
+@media (max-width: 1024px) {
+    .main-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Controls Panel */
+.controls-panel {
+    background: white;
+    border-radius: 1.75rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+    padding: 2.25rem;
+    position: sticky;
+    top: 2rem;
+}
+
+.controls-panel h2 {
+    font-size: 1.5rem;
+    color: #312e81;
+    margin-bottom: 1.75rem;
+    font-weight: 700;
+}
+
+.country-section {
+    padding: 1.5rem;
+    border-radius: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.country-section h3 {
+    font-size: 1.125rem;
+    margin-bottom: 1.25rem;
+    font-weight: 700;
+}
+
+.country-a {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border: 2px solid #93c5fd;
+}
+
+.country-a h3,
+.country-a label {
+    color: #1e40af;
+}
+
+.country-b {
+    background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+    border: 2px solid #d8b4fe;
+}
+
+.country-b h3,
+.country-b label {
+    color: #6b21a8;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border-radius: 0.75rem;
+    border: 2px solid #e2e8f0;
+    font-size: 1rem;
+}
+
+/* Buttons */
+.button-group {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 2rem;
+}
+
+button {
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-primary {
+    flex: 1;
+    background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+    color: white;
+}
+
+.btn-secondary {
+    background: white;
+    border: 2px solid #4f46e5;
+    color: #4f46e5;
+}
+
+/* Results Area */
+.results-area {
+    display: flex;
+    flex-direction: column;
+    gap: 3.5rem;
+}
+
+/* Result Panel */
+.results-panel {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: white;
+    border-radius: 1.75rem;
+    padding: 3rem;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
+}
+
+.results-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 2.25rem;
+}
+
+.results-header h2 {
+    font-size: 1.75rem;
+    font-weight: 800;
+}
+
+/* Highlight */
+.results-highlight {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 1.5rem;
+    padding: 3rem 2.5rem;
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.big-number {
+    font-size: 4.25rem;
+    font-weight: 900;
+    margin-bottom: 0.75rem;
+}
+
+.results-message {
+    font-size: 1.15rem;
+    opacity: 0.95;
+}
+
+/* Cards */
+.population-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 1.5rem;
+}
+
+.population-card {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 1.25rem;
+    padding: 1.5rem 1.75rem;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+}
+
+.card-header h3 {
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+.population-value {
+    font-size: 2.1rem;
+    font-weight: 900;
+    margin-bottom: 0.4rem;
+}
+
+.growth-text {
+    font-size: 0.9rem;
+}
+
+/* Chart */
+.chart-panel {
+    background: white;
+    border-radius: 1.75rem;
+    padding: 3rem;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.1);
+}
+
+.chart-panel h2 {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+    color: #312e81;
+}
+
+#growthChart {
+    max-height: 340px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    body {
+        padding: 1rem;
+    }
+
+    .population-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .big-number {
+        font-size: 2.6rem;
+    }
+}
