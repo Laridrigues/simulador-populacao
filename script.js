@@ -3,193 +3,179 @@ document.addEventListener('DOMContentLoaded', () => {
     /* =========================
        ELEMENTOS DO DOM
     ========================== */
-    const elementos = {
-        nomePaisA: document.getElementById('nomePaisA'),
-        nomePaisB: document.getElementById('nomePaisB'),
-        flagPaisA: document.getElementById('flagPaisA'),
-        flagPaisB: document.getElementById('flagPaisB'),
+    const el = {
+        selectPais1: document.getElementById('nomePaisA'),
+        selectPais2: document.getElementById('nomePaisB'),
+        flagPais1: document.getElementById('flagPaisA'),
+        flagPais2: document.getElementById('flagPaisB'),
 
-        populacaoA: document.getElementById('populacaoA'),
-        populacaoB: document.getElementById('populacaoB'),
-        taxaA: document.getElementById('taxaA'),
-        taxaB: document.getElementById('taxaB'),
-        displayPopA: document.getElementById('displayPopA'),
-        displayPopB: document.getElementById('displayPopB'),
+        populacao1: document.getElementById('populacaoA'),
+        populacao2: document.getElementById('populacaoB'),
+        taxa1: document.getElementById('taxaA'),
+        taxa2: document.getElementById('taxaB'),
+        displayPop1: document.getElementById('displayPopA'),
+        displayPop2: document.getElementById('displayPopB'),
 
         btnSimular: document.getElementById('btnSimular'),
-        btnReset: document.getElementById('btnReset'),
 
         resultsPanel: document.getElementById('resultsPanel'),
         chartPanel: document.getElementById('chartPanel'),
 
-        diasTotal: document.getElementById('diasTotal'),
+        anosTotal: document.getElementById('diasTotal'),
         paisVencedor: document.getElementById('paisVencedor'),
-        paisPerdedor: document.getElementById('paisPerdedor'),
-        populacaoAFinal: document.getElementById('populacaoAFinal'),
-        populacaoBFinal: document.getElementById('populacaoBFinal'),
-        crescimentoA: document.getElementById('crescimentoA'),
-        crescimentoB: document.getElementById('crescimentoB')
+        paisSuperado: document.getElementById('paisPerdedor'),
+        popFinal1: document.getElementById('populacaoAFinal'),
+        popFinal2: document.getElementById('populacaoBFinal'),
+        crescimento1: document.getElementById('crescimentoA'),
+        crescimento2: document.getElementById('crescimentoB')
     };
 
     let paises = [];
-    let growthChart = null;
+    let grafico = null;
 
     /* =========================
-       PAÍSES + BANDEIRAS (ROBUSTO)
+       CARREGAR PAÍSES (CountriesNow)
     ========================== */
     async function carregarPaises() {
         try {
-            const response = await fetch('https://restcountries.com/v3.1/all');
+            const res = await fetch('https://countriesnow.space/api/v0.1/countries/flag/images');
+            if (!res.ok) throw new Error();
 
-            if (!response.ok) throw new Error('Falha na API');
+            const json = await res.json();
+            if (!json.data) throw new Error();
 
-            const data = await response.json();
-
-            paises = data
+            paises = json.data
                 .map(p => ({
-                    nome: p.translations?.por?.common || p.name.common,
-                    codigo: p.cca2?.toLowerCase()
+                    nome: p.name,
+                    codigo: p.iso2?.toLowerCase() || '',
+                    bandeira: p.flag
                 }))
                 .filter(p => p.codigo)
-                .sort((a, b) => a.nome.localeCompare(b.nome));
+                .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
 
-        } catch (error) {
-            console.warn('API indisponível. Usando fallback local.');
+            preencherSelect(el.selectPais1);
+            preencherSelect(el.selectPais2);
 
-            // FALLBACK LOCAL (nunca quebra)
-            paises = [
-                { nome: 'Brasil', codigo: 'br' },
-                { nome: 'Argentina', codigo: 'ar' },
-                { nome: 'Estados Unidos', codigo: 'us' },
-                { nome: 'China', codigo: 'cn' },
-                { nome: 'Índia', codigo: 'in' },
-                { nome: 'Japão', codigo: 'jp' },
-                { nome: 'Alemanha', codigo: 'de' },
-                { nome: 'França', codigo: 'fr' },
-                { nome: 'Reino Unido', codigo: 'gb' },
-                { nome: 'Itália', codigo: 'it' }
-            ];
+            el.selectPais1.value = 'br';
+            el.selectPais2.value = 'ar';
+
+            atualizarBandeira(el.selectPais1, el.flagPais1);
+            atualizarBandeira(el.selectPais2, el.flagPais2);
+
+        } catch (e) {
+            alert('Não foi possível carregar a lista de países.');
+            console.error(e);
         }
-
-        preencherSelect(elementos.nomePaisA);
-        preencherSelect(elementos.nomePaisB);
-
-        elementos.nomePaisA.value = 'br';
-        elementos.nomePaisB.value = 'ar';
-
-        atualizarBandeira(elementos.nomePaisA, elementos.flagPaisA);
-        atualizarBandeira(elementos.nomePaisB, elementos.flagPaisB);
     }
 
     function preencherSelect(select) {
         select.innerHTML = '';
-        paises.forEach(pais => {
-            const option = document.createElement('option');
-            option.value = pais.codigo;
-            option.textContent = pais.nome;
-            select.appendChild(option);
+        paises.forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p.codigo;
+            opt.textContent = p.nome;
+            select.appendChild(opt);
         });
     }
 
     function atualizarBandeira(select, img) {
-        img.src = `https://flagcdn.com/w40/${select.value}.png`;
-        img.alt = select.value;
+        const pais = paises.find(p => p.codigo === select.value);
+        if (pais) {
+            img.src = pais.bandeira;
+            img.alt = pais.nome;
+        }
     }
 
-    function nomePaisPorCodigo(codigo) {
+    function nomePais(codigo) {
         return paises.find(p => p.codigo === codigo)?.nome || '';
     }
 
     /* =========================
        FORMATAÇÃO
     ========================== */
-    function formatarNumero(num) {
-        return new Intl.NumberFormat('pt-BR').format(Math.round(num));
+    function formatar(n) {
+        return new Intl.NumberFormat('pt-BR').format(Math.round(n));
     }
 
     function atualizarDisplay() {
-        elementos.displayPopA.textContent =
-            formatarNumero(elementos.populacaoA.value) + ' habitantes';
-
-        elementos.displayPopB.textContent =
-            formatarNumero(elementos.populacaoB.value) + ' habitantes';
+        el.displayPop1.textContent = `${formatar(el.populacao1.value)} habitantes`;
+        el.displayPop2.textContent = `${formatar(el.populacao2.value)} habitantes`;
     }
 
     /* =========================
        SIMULAÇÃO
     ========================== */
-    function executarSimulacao() {
+    function simular() {
 
-        let popA = Number(elementos.populacaoA.value);
-        let popB = Number(elementos.populacaoB.value);
-        const taxaA = Number(elementos.taxaA.value) / 100;
-        const taxaB = Number(elementos.taxaB.value) / 100;
+        let pop1 = Number(el.populacao1.value);
+        let pop2 = Number(el.populacao2.value);
+        const taxa1 = Number(el.taxa1.value) / 100;
+        const taxa2 = Number(el.taxa2.value) / 100;
 
-        const nomeA = nomePaisPorCodigo(elementos.nomePaisA.value);
-        const nomeB = nomePaisPorCodigo(elementos.nomePaisB.value);
+        const nome1 = nomePais(el.selectPais1.value);
+        const nome2 = nomePais(el.selectPais2.value);
 
-        if (popA <= 0 || popB <= 0 || taxaA <= 0 || taxaB < 0) {
-            alert('Valores inválidos.');
+        if (pop1 <= 0 || pop2 <= 0 || taxa1 <= 0 || taxa2 < 0) {
+            alert('Informe valores válidos para população e taxa.');
             return;
         }
 
-        if (popA >= popB || taxaA <= taxaB) {
-            alert('A população A deve ser menor e crescer mais rápido.');
+        if (pop1 >= pop2 || taxa1 <= taxa2) {
+            alert(`${nome1} precisa ter população menor e crescimento maior que ${nome2}.`);
             return;
         }
 
-        const dados = { anos: [], a: [], b: [] };
-        const popAInicial = popA;
-        const popBInicial = popB;
+        const dados = { anos: [], p1: [], p2: [] };
+        const ini1 = pop1;
+        const ini2 = pop2;
         let anos = 0;
 
-        while (popA <= popB && anos < 10000) {
+        while (pop1 <= pop2 && anos < 10000) {
             dados.anos.push(anos);
-            dados.a.push(popA);
-            dados.b.push(popB);
-
-            popA *= 1 + taxaA;
-            popB *= 1 + taxaB;
+            dados.p1.push(pop1);
+            dados.p2.push(pop2);
+            pop1 *= 1 + taxa1;
+            pop2 *= 1 + taxa2;
             anos++;
         }
 
-        exibirResultados(nomeA, nomeB, anos, popA, popB, dados, popAInicial, popBInicial);
+        mostrarResultados(nome1, nome2, anos, pop1, pop2, ini1, ini2, dados);
     }
 
     /* =========================
        RESULTADOS
     ========================== */
-    function exibirResultados(nomeA, nomeB, anos, popA, popB, dados, iniA, iniB) {
+    function mostrarResultados(n1, n2, anos, f1, f2, i1, i2, dados) {
 
-        elementos.diasTotal.textContent = anos + ' anos';
-        elementos.paisVencedor.textContent = nomeA;
-        elementos.paisPerdedor.textContent = nomeB;
-        elementos.populacaoAFinal.textContent = formatarNumero(popA);
-        elementos.populacaoBFinal.textContent = formatarNumero(popB);
-        elementos.crescimentoA.textContent = (((popA - iniA) / iniA) * 100).toFixed(1) + '%';
-        elementos.crescimentoB.textContent = (((popB - iniB) / iniB) * 100).toFixed(1) + '%';
+        el.anosTotal.textContent = `${anos} anos`;
+        el.paisVencedor.textContent = n1;
+        el.paisSuperado.textContent = n2;
+        el.popFinal1.textContent = formatar(f1);
+        el.popFinal2.textContent = formatar(f2);
+        el.crescimento1.textContent = `${(((f1 - i1) / i1) * 100).toFixed(1)}%`;
+        el.crescimento2.textContent = `${(((f2 - i2) / i2) * 100).toFixed(1)}%`;
 
-        elementos.resultsPanel.classList.remove('hidden');
-        elementos.chartPanel.classList.remove('hidden');
+        el.resultsPanel.classList.remove('hidden');
+        el.chartPanel.classList.remove('hidden');
 
-        criarGrafico(nomeA, nomeB, dados);
+        criarGrafico(n1, n2, dados);
     }
 
     /* =========================
        GRÁFICO
     ========================== */
-    function criarGrafico(nomeA, nomeB, dados) {
+    function criarGrafico(n1, n2, dados) {
 
         const ctx = document.getElementById('growthChart').getContext('2d');
-        if (growthChart) growthChart.destroy();
+        if (grafico) grafico.destroy();
 
-        growthChart = new Chart(ctx, {
+        grafico = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: dados.anos,
                 datasets: [
-                    { label: nomeA, data: dados.a, borderWidth: 3 },
-                    { label: nomeB, data: dados.b, borderWidth: 3 }
+                    { label: n1, data: dados.p1, borderWidth: 3 },
+                    { label: n2, data: dados.p2, borderWidth: 3 }
                 ]
             },
             options: { responsive: true }
@@ -199,19 +185,12 @@ document.addEventListener('DOMContentLoaded', () => {
     /* =========================
        EVENTOS
     ========================== */
-    elementos.nomePaisA.addEventListener('change', () =>
-        atualizarBandeira(elementos.nomePaisA, elementos.flagPaisA)
-    );
-
-    elementos.nomePaisB.addEventListener('change', () =>
-        atualizarBandeira(elementos.nomePaisB, elementos.flagPaisB)
-    );
-
-    elementos.btnSimular.addEventListener('click', executarSimulacao);
-    elementos.populacaoA.addEventListener('input', atualizarDisplay);
-    elementos.populacaoB.addEventListener('input', atualizarDisplay);
+    el.selectPais1.addEventListener('change', () => atualizarBandeira(el.selectPais1, el.flagPais1));
+    el.selectPais2.addEventListener('change', () => atualizarBandeira(el.selectPais2, el.flagPais2));
+    el.btnSimular.addEventListener('click', simular);
+    el.populacao1.addEventListener('input', atualizarDisplay);
+    el.populacao2.addEventListener('input', atualizarDisplay);
 
     atualizarDisplay();
     carregarPaises();
-
 });
