@@ -213,4 +213,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     atualizarDisplay();
     carregarPaises();
+
 });
