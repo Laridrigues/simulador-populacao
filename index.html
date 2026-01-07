@@ -1,144 +1,141 @@
-// script.js
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Crescimento Populacional</title>
 
-// Variáveis do DOM
-const btnSimular = document.getElementById("btnSimular");
-const btnReset = document.getElementById("btnReset");
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
 
-const populacaoAInput = document.getElementById("populacaoA");
-const populacaoBInput = document.getElementById("populacaoB");
-const taxaAInput = document.getElementById("taxaA");
-const taxaBInput = document.getElementById("taxaB");
+<div class="container">
 
-const diasTotal = document.getElementById("diasTotal");
-const diasTotalText = document.getElementById("diasTotalText");
-const paisVencedor = document.getElementById("paisVencedor");
-const paisPerdedor = document.getElementById("paisPerdedor");
+    <header>
+        <h1>Simulador de Crescimento Populacional</h1>
+        <p class="subtitle">
+            Simule o crescimento populacional de dois países com taxas diferentes
+        </p>
+    </header>
 
-const popAfinal = document.getElementById("populacaoAFinal");
-const popBfinal = document.getElementById("populacaoBFinal");
-const crescimentoAEl = document.getElementById("crescimentoA");
-const crescimentoBEl = document.getElementById("crescimentoB");
+    <div class="main-grid">
 
-const resultsPanel = document.getElementById("resultsPanel");
-const chartPanel = document.getElementById("chartPanel");
-const ctx = document.getElementById("growthChart").getContext("2d");
+        <!-- CONTROLES -->
+        <div class="controls-panel">
+            <h2>Parâmetros da Simulação</h2>
 
-let growthChart;
+            <!-- PRIMEIRO PAÍS -->
+            <div class="country-section country-a">
+                <h3>Primeiro país</h3>
 
-// Função principal
-btnSimular.addEventListener("click", () => {
-    // Leitura dos inputs
-    let popA = Number(populacaoAInput.value);
-    let popB = Number(populacaoBInput.value);
-    let taxaA = Number(taxaAInput.value);
-    let taxaB = Number(taxaBInput.value);
+                <div class="form-group">
+                    <label>Selecione o país</label>
+                    <div class="country-select">
+                        <img id="flagPaisA" class="flag" alt="Bandeira do país">
+                        <select id="nomePaisA"></select>
+                    </div>
+                </div>
 
-    // VALIDAÇÕES
-    if (popA <= 0 || popA > 1_000_000_000 || popB <= 0 || popB > 1_000_000_000) {
-        alert("População deve estar entre 1.000 e 1.000.000.000 habitantes.");
-        return;
-    }
-    if (taxaA < -1 || taxaA > 5 || taxaB < -1 || taxaB > 5) {
-        alert("Taxas de crescimento devem estar entre -1% e 5% ao ano.");
-        return;
-    }
+                <div class="form-group">
+                    <label>População inicial</label>
+                    <input type="number" id="populacaoA" value="100000000" min="0" step="100000000">
+                    <small id="displayPopA">1.000.000 habitantes</small>
+                </div>
 
-    // Definindo nomes dos países
-    const nomePaisA = document.getElementById("nomePaisA").value || "Primeiro país";
-    const nomePaisB = document.getElementById("nomePaisB").value || "Segundo país";
+                <div class="form-group">
+                    <label>Taxa de crescimento anual (%)</label>
+                    <input type="number" id="taxaA" value="3" min="0" step="0.1">
+                </div>
+            </div>
 
-    // Inicialização
-    let anos = 0;
-    const maxAnos = 500; // Limite para evitar loop infinito
-    const historicoA = [popA];
-    const historicoB = [popB];
+            <!-- SEGUNDO PAÍS -->
+            <div class="country-section country-b">
+                <h3>Segundo país</h3>
 
-    // Caso já ultrapassado no ano 0
-    if (popA >= popB) {
-        diasTotal.innerText = "0 anos";
-        diasTotalText.innerText = "0";
-        paisVencedor.innerText = nomePaisA;
-        paisPerdedor.innerText = nomePaisB;
-    } else {
-        // Simulação ano a ano
-        while (popA < popB && anos < maxAnos) {
-            popA = popA * (1 + taxaA / 100);
-            popB = popB * (1 + taxaB / 100);
-            historicoA.push(popA);
-            historicoB.push(popB);
-            anos++;
-        }
+                <div class="form-group">
+                    <label>Selecione o país</label>
+                    <div class="country-select">
+                        <img id="flagPaisB" class="flag" alt="Bandeira do país">
+                        <select id="nomePaisB"></select>
+                    </div>
+                </div>
 
-        diasTotal.innerText = `${anos} anos`;
-        diasTotalText.innerText = anos;
-        paisVencedor.innerText = popA >= popB ? nomePaisA : nomePaisB;
-        paisPerdedor.innerText = popA >= popB ? nomePaisB : nomePaisA;
-    }
+                <div class="form-group">
+                    <label>População inicial</label>
+                    <input type="number" id="populacaoB" value="5000000" min="0" step="100000">
+                    <small id="displayPopB">5.000.000 habitantes</small>
+                </div>
 
-    // Resultados finais
-    popAfinal.innerText = Math.round(popA).toLocaleString();
-    popBfinal.innerText = Math.round(popB).toLocaleString();
-    crescimentoAEl.innerText = taxaA + "%";
-    crescimentoBEl.innerText = taxaB + "%";
+                <div class="form-group">
+                    <label>Taxa de crescimento anual (%)</label>
+                    <input type="number" id="taxaB" value="1.5" min="0" step="0.1">
+                </div>
+            </div>
 
-    // Exibir painel de resultados
-    resultsPanel.classList.remove("hidden");
-    chartPanel.classList.remove("hidden");
+            <!-- BOTÕES -->
+            <div class="button-group">
+                <button id="btnSimular" class="btn-primary">
+                    Simular
+                </button>
+                <button id="btnReset" class="btn-secondary" type="button">
+                    Limpar
+                </button>
+            </div>
+        </div>
 
-    // Atualizar gráfico
-    if (growthChart) growthChart.destroy();
-    growthChart = new Chart(ctx, {
-        type: "line",
-        data: {
-            labels: Array.from({ length: historicoA.length }, (_, i) => i),
-            datasets: [
-                {
-                    label: nomePaisA,
-                    data: historicoA,
-                    borderColor: "rgba(54, 162, 235, 1)",
-                    backgroundColor: "rgba(54, 162, 235, 0.2)",
-                    tension: 0.3
-                },
-                {
-                    label: nomePaisB,
-                    data: historicoB,
-                    borderColor: "rgba(255, 99, 132, 1)",
-                    backgroundColor: "rgba(255, 99, 132, 0.2)",
-                    tension: 0.3
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: "top" },
-                title: {
-                    display: true,
-                    text: "Crescimento Populacional ao Longo dos Anos"
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function (value) {
-                            return value.toLocaleString();
-                        }
-                    }
-                },
-                x: { title: { display: true, text: "Ano" } }
-            }
-        }
-    });
-});
+        <!-- RESULTADOS -->
+        <div class="results-area">
 
-// Botão reset
-btnReset.addEventListener("click", () => {
-    populacaoAInput.value = 100_000_000;
-    populacaoBInput.value = 5_000_000;
-    taxaAInput.value = 0.6;
-    taxaBInput.value = 0.8;
-    resultsPanel.classList.add("hidden");
-    chartPanel.classList.add("hidden");
-    if (growthChart) growthChart.destroy();
-});
+            <div id="resultsPanel" class="results-panel hidden">
+                <div class="results-header">
+                    <h2>Resultado da Simulação</h2>
+                </div>
+
+                <div class="results-highlight">
+                    <p class="big-number" id="diasTotal">0 anos</p>
+                    <p class="results-message">
+                        Irá levar <strong id="diasTotalText">0</strong> anos para
+                        <strong id="paisVencedor"></strong> ultrapassar
+                        <strong id="paisPerdedor"></strong>
+                    </p>
+                </div>
+
+                <div class="population-grid">
+
+                    <div class="population-card card-a">
+                        <div class="card-header">
+                            <h3 id="resultNomePaisA">Primeiro país</h3>
+                        </div>
+                        <p class="population-value" id="populacaoAFinal">0</p>
+                        <p class="growth-text">
+                            Crescimento: <span id="crescimentoA">0%</span>
+                        </p>
+                    </div>
+
+                    <div class="population-card card-b">
+                        <div class="card-header">
+                            <h3 id="resultNomePaisB">Segundo país</h3>
+                        </div>
+                        <p class="population-value" id="populacaoBFinal">0</p>
+                        <p class="growth-text">
+                            Crescimento: <span id="crescimentoB">0%</span>
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- GRÁFICO -->
+            <div id="chartPanel" class="chart-panel hidden">
+                <h2>Gráfico de Crescimento Populacional</h2>
+                <canvas id="growthChart"></canvas>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
