@@ -63,8 +63,8 @@
 
                 <div class="form-group">
                     <label>População inicial</label>
-                    <input type="number" id="populacaoB" value="5000000" min="0" step="100000">
-                    <small id="displayPopB">5.000.000 habitantes</small>
+                    <input type="number" id="populacaoB" value="100000000" min="0" step="100000000">
+                    <small id="displayPopB">100.000.000 habitantes</small>
                 </div>
 
                 <div class="form-group">
